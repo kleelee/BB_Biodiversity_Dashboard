@@ -29,18 +29,60 @@ function buildCharts(sample) {
 
   // @TODO: Use `d3.json` to fetch the sample data for the plots
   var sample = d3.select("#selDataset").node().value;
-  var asdf = d3.json(`/samples/${sample}`);
-  console.log(asdf);
 
   //var otu = asdf.map(y => y.otu_ids).limit(10);
   //console.log(otu);
-
+  
   var data = d3.json(`/samples/${sample}`).then(function(x){
+ 
     // @TODO: Build a Bubble Chart using the sample data
+    //populates the arrays for the graphs
     
-    for(i = 0; i<10; i++){
-    console.log(x.otu_ids[10]);
-    }
+    var otu_ids = x.otu_ids;
+    var sample_vals = x.sample_values;
+    var otu_labels = x.otu_labels;
+
+    var ten_otu_ids = otu_ids.slice(0,10);
+    var ten_sample_vals = sample_vals.slice(0,10);
+    var ten_otu_labels = otu_labels.slice(0,10);
+
+    var trace1 = {
+      labels: ten_otu_ids,
+      values: ten_sample_vals,
+      text: ten_otu_labels,
+      hoverinfo: 'label+value+text+percent',
+      textinfo: 'percent',
+      type: "pie"
+    };
+
+    var data = [trace1];
+    
+    var layout = {
+      title: "Pie Chart"
+    };
+
+    Plotly.newPlot("pie", data, layout);
+
+
+    //bubble chart
+    trace2 = {
+      x: otu_ids,
+      y: sample_vals,
+      text:otu_labels,
+      mode: 'markers',
+      marker: 
+        {size: sample_vals, 
+         color: otu_ids},
+      hoverinfo: 'x+y+text'
+    };
+
+    var data2 = [trace2];
+    layout2 = {
+      title: "Bubble Chart",
+      xaxis: {title: "OTU ID"}
+
+    };
+    Plotly.newPlot("bubble", data2, layout2);
     // @TODO: Build a Pie Chart
     // HINT: You will need to use slice() to grab the top 10 sample_values,
     // otu_ids, and labels (10 each).
